@@ -33,7 +33,8 @@ drilldraw is an open web app for drawing and sharing sports drills (Ice Hockey n
 
 ## Deploy / Azure
 
-- Every push to `main` runs CI (lint, typecheck, tests, build, e2e) and deploys to https://drilldraw.azurewebsites.net through `.github/workflows/azure-webapp.yml`. Work is committed directly to main.
+- Every push to `main` runs CI (`.github/workflows/ci.yml`: lint, typecheck, tests, build, e2e). Work is committed directly to main.
+- **Deploys are manual** (zip deploy via `az`; steps are in the `/azure-setup` skill) to https://drilldraw.azurewebsites.net. GitHub has no Azure credentials, so don't add a deploy job unless asked.
 - Resource details and setup steps are in the `/azure-setup` skill. The App Service plan is **shared with other apps**; never change or scale it.
 - Realtime rooms live in process memory, so the app must run on **one instance**. Scaling out means moving sync to Azure Web PubSub first.
 - Storage access uses managed identity (`DRILL_STORAGE_TABLE_URL`). In production the server refuses to start without a storage setting.

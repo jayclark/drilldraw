@@ -23,13 +23,13 @@ Required web app configuration:
 - System-assigned managed identity with **Storage Table Data Contributor** on the storage account. The app creates the tables on startup.
 - Must stay on **one instance**: the realtime server is single-process. Scaling out requires moving sync to Azure Web PubSub first.
 
-GitHub Actions deploy (OIDC, no publish profile):
+GitHub Actions deploy (**not set up**: deploys are manual for now; only do this if the user asks to automate deploys, then add a deploy job to `.github/workflows/ci.yml`). OIDC, no publish profile:
 
 1. `az ad app create --display-name drilldraw-github` → appId; `az ad sp create --id <appId>`.
 2. Federated credential on the app: issuer `https://token.actions.githubusercontent.com`, audience `api://AzureADTokenExchange`, subject `repo:jayclark/drilldraw:environment:production`.
 3. `az role assignment create --assignee <appId> --role "Website Contributor" --scope <drilldraw web app resource id>` (scope to the web app only).
 4. `gh secret set AZURE_CLIENT_ID|AZURE_TENANT_ID|AZURE_SUBSCRIPTION_ID -R jayclark/drilldraw`, and create the `production` environment in the repo.
 
-Manual deploy (when CI isn't set up): build, then package `dist`, production `node_modules` (`npm ci --omit=dev --ignore-scripts` in a clean copy) and `package.json` into a zip and run `az webapp deploy -g rg-drilldraw -n drilldraw --src-path release.zip --type zip`. Confirm with `curl https://drilldraw.azurewebsites.net/health`.
+Manual deploy (the current process): build, then package `dist`, production `node_modules` (`npm ci --omit=dev --ignore-scripts` in a clean copy) and `package.json` into a zip and run `az webapp deploy -g rg-drilldraw -n drilldraw --src-path release.zip --type zip`. Confirm with `curl https://drilldraw.azurewebsites.net/health`.
 
 Confirm with the user before creating anything that costs money or creates identities, and never change the shared plan.
